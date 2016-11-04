@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta id="viewport" name="viewport" content="width=320,minimum-scale=1,maximum-scale=5,user-scalable=no">
+<style> 
+body, table, tbody, tr, td{
+  margin: 0px;
+  padding:0px;
+}
+td{
+  width: 3px;
+  height: 3px;
+}
+</style>
+<script src="jquery-2.2.0.min.js"></script>
+<script src="game_of_life.js"></script>
+</head>
+<body>
+
+<div id="target"></div>
+<div id="c">0</div>
+<button onclick="reset()">重置</button>
+<button onclick="zanting()">暂停</button>
+<button onclick="kaishi()">开始</button>
+<div id="target2"></div>
+<script>
+  var game_of_life = new GameOfLife();
+  game_of_life.init('target2', 80, 64);
+  game_of_life.rand(0, 0, 10, 10, 50);
+  game_of_life.start(300);
+
+//file:///Users/free/project/hifive/anli/game_of_life/index.html
+  var mx = 80, my = 64;
+    var color_white = "rgb(255, 255, 255)";
+    var color_red = "rgb(255, 0, 0)";
+    var color_black = "rgb(0, 0, 0)";
+  var randx = 5, randy=5;
+
+  //一块无限大的黑白格子棋盘上，有一只蚂蚁，如果它站在白色格子上就向左走，站在黑色格子上就向右走，并且离开后，原来所站的格子颜色反转。
+  var target = document.getElementById('target');
+    t = document.createElement('table');
+    t.style.backgroundColor="antiquewhite";
+    var sz = [];
+    for(i=0; i<mx; i++){
+        var tr = t.insertRow(-1);
+        sz[i] = [];
+        for(j=0; j<my; j++){
+          sz[i][j] = tr.insertCell(-1);
+          // if(i>mx*0.25 && i<mx*0.75 && j>my*0.25 && j<my*0.75){
+          //   sz[i][j].style.background = Math.floor(Math.random()*10)%2==0?'#FFF':'#000';
+          // }else{
+          //   sz[i][j].style.background = '#FFF';
+          // }
+          sz[i][j].style.background = color_white;
+          sz[i][j].id="id-"+i+"-"+j;
+        }
+    }
+    target.appendChild(t);
+
+    rand(randx, randy);
+    function rand(w, h){
+      for(x=(mx-w)/2; x<(mx+w)/2; x++){
+        for(y=(my-h)/2; y<(my+h)/2; y++){
+           sz[Math.floor(x)][Math.floor(y)].style.background = Math.floor(Math.random()*100)<20 ? '#000' : '#FFF';
+        }
+      }
+    }
+
+
+    // sz[64][64].style.background = color_black;
+    // sz[64][65].style.background = color_black;
+
+    // sz[65][63].style.background = color_black;
+    // sz[65][64].style.background = color_black;
+    // sz[65][65].style.background = color_black;
+    // sz[65][66].style.background = color_black;
+
+    // sz[66][62].style.background = color_black;
+    // sz[66][63].style.background = color_black;
+    // sz[66][65].style.background = color_black;
+    // sz[66][66].style.background = color_black;
+
+    // sz[67][63].style.background = color_black;
+    // sz[67][64].style.background = color_black;
+
+
+    var interval = 0;
+    var runing = false;
+
+    function zanting(){
+      if(!runing){
+        return;
+      }
+      clearInterval(interval);
+      runing = false;
+    }
+
+    function kaishi(){
+      if(runing){
+        return;
+      }
+      interval = setInterval(tick, 300);
+      runing = true;
+    }
+
+    function reset(){
+      runing = false;
+      clearInterval(interval);
+      for(x=1; x<mx-1; x++){
+        for(y=1; y<my-1; y++){
+          sz[x][y].style.background = color_white;
+        }
+      }
+      rand(randx, randy);
+      //interval = setInterval(tick, 500);
+      document.getElementById('c').innerHTML = '0';
+    }
+
+    function tick(){
+      for(x=1; x<mx-1; x++){
+        for(y=1; y<my-1; y++){
+          count = 0;
+          if(sz[x-1][y-1].style.background == color_black){
+            count++;
+          }
+          if(sz[x][y-1].style.background == color_black){
+            count++;
+          }
+          if(sz[x+1][y-1].style.background == color_black){
+            count++;
+          }
+          if(sz[x-1][y].style.background == color_black){
+            count++;
+          }
+          if(sz[x][y].style.background == color_black){
+            count++;
+          }
+          if(sz[x+1][y].style.background == color_black){
+            count++;
+          }
+          if(sz[x-1][y+1].style.background == color_black){
+            count++;
+          }
+          if(sz[x][y+1].style.background == color_black){
+            count++;
+          }
+          if(sz[x+1][y+1].style.background == color_black){
+            count++;
+          }
+          //console.log(x+"/"+y+"/"+count);
+          if(count == 3 || count == 4){
+            sz[x][y].style.new_background = color_black;
+          }else{
+            sz[x][y].style.new_background = color_white;
+          }
+        }
+      }
+      for(x=1; x<mx-1; x++){
+        for(y=1; y<my-1; y++){
+          //$("#id-"+x+"-"+y).animate({backgroundColor:sz[x][y].style.new_background}, 100);
+          sz[x][y].style.background = sz[x][y].style.new_background;
+        }
+      }
+      document.getElementById('c').innerHTML = document.getElementById('c').innerHTML*1+1;
+    }
+
+</script>
+</body>
+</html>
